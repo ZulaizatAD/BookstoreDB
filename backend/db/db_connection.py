@@ -5,23 +5,21 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 # Load environment variables from .env
 load_dotenv()
+print("DB Username:", os.getenv("DB_USERNAME"))
 
-# Database URL (Update as needed)
+# Database URL
 DB_USERNAME = os.getenv("DB_USERNAME")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
+# Database URL
 DATABASE_URL = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # Check for required envs
-if not all([DB_USERNAME, DB_PASSWORD, DB_NAME]):
-    raise ValueError("Database credentials are missing in .env file!")
-
-# Set up SQLAlchemy Engine and Base
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine)
-Base = declarative_base()
+required_envs = [DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME]
+if not all(required_envs):
+    raise ValueError("Some database environment variables are missing in .env file!")
 
 # Set up SQLAlchemy Engine and Base
 engine = create_engine(DATABASE_URL)
@@ -30,7 +28,6 @@ Base = declarative_base()
 
 # Create tables automatically when the module is imported
 def init_table():
-    Base.metadata.drop_all(engine) # Drops all tables
     Base.metadata.create_all(engine)
     
 # Function to get a database session

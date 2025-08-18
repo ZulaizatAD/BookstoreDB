@@ -1,68 +1,199 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    font-weight: 400;
+    color-scheme: light;
+    
+    /* Custom CSS variables for theme */
+    --primary-color: #5F9EA0;
+    --secondary-color: #F0F8FF;
+    --accent-color: #4682B4;
+    --text-dark: #2F4F4F;
+    --shadow-cadet: rgba(95, 158, 160, 0.3);
   }
-  a:hover {
-    color: #747bff;
+
+  * {
+    box-sizing: border-box;
   }
-  button {
-    background-color: #f9f9f9;
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #F0F8FF 0%, #E6F3FF 50%, #F0F8FF 100%);
+    color: #2F4F4F;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #2F4F4F;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@layer components {
+  /* Custom button styles */
+  .btn-primary {
+    @apply bg-cadetblue text-white px-6 py-3 rounded-lg font-medium shadow-md hover:bg-cadetblue-dark hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cadetblue focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-aliceblue text-cadetblue border-2 border-cadetblue px-6 py-3 rounded-lg font-medium hover:bg-cadetblue hover:text-white transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cadetblue focus:ring-offset-2;
+  }
+
+  .btn-danger {
+    @apply bg-red-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-xl shadow-cadet hover:shadow-cadet-lg transform hover:-translate-y-1 transition-all duration-300 border border-light-steel-blue/30;
+  }
+
+  .card-header {
+    @apply bg-gradient-to-r from-cadetblue to-steel-blue text-white px-6 py-4 rounded-t-xl;
+  }
+
+  /* Form styles */
+  .form-input {
+    @apply block w-full px-4 py-3 border border-light-steel-blue rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cadetblue focus:border-cadetblue bg-aliceblue text-slate-gray placeholder-gray-400 transition-all duration-200;
+  }
+
+  .form-input-error {
+    @apply border-red-400 focus:ring-red-500 focus:border-red-500;
+  }
+
+  /* Navigation styles */
+  .nav-link {
+    @apply text-white hover:text-aliceblue px-4 py-2 rounded-lg transition-all duration-200 hover:bg-white/20 transform hover:-translate-y-0.5;
+  }
+
+  /* Alert styles */
+  .alert {
+    @apply px-4 py-3 rounded-lg border-l-4 animate-fade-in;
+  }
+
+  .alert-info {
+    @apply bg-blue-50 border-blue-400 text-blue-800;
+  }
+
+  .alert-success {
+    @apply bg-green-50 border-green-400 text-green-800;
+  }
+
+  .alert-warning {
+    @apply bg-yellow-50 border-yellow-400 text-yellow-800;
+  }
+
+  .alert-error {
+    @apply bg-red-50 border-red-400 text-red-800;
+  }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .backdrop-blur-light {
+    backdrop-filter: blur(8px);
+  }
+
+  /* Custom scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #5F9EA0 #F0F8FF;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #F0F8FF;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #5F9EA0;
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #4B7B7D;
+  }
+}
+
+/* Loading animations */
+@keyframes pulse-cadet {
+  0%, 100% {
+    background-color: #5F9EA0;
+  }
+  50% {
+    background-color: #7BB3B6;
+  }
+}
+
+.animate-pulse-cadet {
+  animation: pulse-cadet 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom focus styles */
+.focus-cadet:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(95, 158, 160, 0.3);
+}
+
+/* Responsive text sizes */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
   }
 }
