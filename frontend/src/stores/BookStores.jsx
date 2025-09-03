@@ -16,9 +16,9 @@ export const useBooksStore = () => {
 
   // Helper function to handle API errors
   const handleApiError = (error, defaultMessage) => {
-    console.error('API Error:', error);
-    if (error.message.includes('Failed to fetch')) {
-      return 'Unable to connect to server. Please check your connection.';
+    console.error("API Error:", error);
+    if (error.message.includes("Failed to fetch")) {
+      return "Unable to connect to server. Please check your connection.";
     }
     return error.message || defaultMessage;
   };
@@ -44,7 +44,9 @@ export const useBooksStore = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: Failed to add book`);
+        throw new Error(
+          errorData.message || `HTTP ${response.status}: Failed to add book`
+        );
       }
 
       const result = await response.json();
@@ -67,18 +69,13 @@ export const useBooksStore = () => {
       setLoading(true);
       setError("");
 
-      const response = await fetch("http://127.0.0.1:8000/books");
+      const { data, error } = await supabase.from("books").select("*");
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: Failed to fetch books`);
-      }
+      if (error) throw error;
 
-      const result = await response.json();
-      setBooks(result);
+      setBooks(data);
     } catch (err) {
-      const errorMessage = handleApiError(err, "Failed to fetch books");
-      setError(errorMessage);
+      setError(err.message || "Failed to fetch books");
       throw err;
     } finally {
       setLoading(false);
@@ -102,7 +99,9 @@ export const useBooksStore = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: Failed to delete book`);
+        throw new Error(
+          errorData.message || `HTTP ${response.status}: Failed to delete book`
+        );
       }
 
       setBooks((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
@@ -125,7 +124,9 @@ export const useBooksStore = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: Book not found`);
+        throw new Error(
+          errorData.message || `HTTP ${response.status}: Book not found`
+        );
       }
 
       const result = await response.json();
@@ -140,53 +141,61 @@ export const useBooksStore = () => {
     }
   }, []);
 
-  const updateBook = useCallback(async (bookId, bookData) => {
-    try {
-      setUpdateBookLoading(true);
-      setUpdateBookError("");
+  const updateBook = useCallback(
+    async (bookId, bookData) => {
+      try {
+        setUpdateBookLoading(true);
+        setUpdateBookError("");
 
-      const response = await fetch(
-        `http://127.0.0.1:8000/books/${bookId}/edit`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: bookData.title,
-            author: bookData.author,
-            price: Number(bookData.price),
-            qty: Number(bookData.qty),
-          }),
+        const response = await fetch(
+          `http://127.0.0.1:8000/books/${bookId}/edit`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: bookData.title,
+              author: bookData.author,
+              price: Number(bookData.price),
+              qty: Number(bookData.qty),
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message ||
+              `HTTP ${response.status}: Failed to update book`
+          );
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: Failed to update book`);
+        const result = await response.json();
+
+        // Update the book in local state
+        setBooks((prevBooks) =>
+          prevBooks.map((book) =>
+            book.id === parseInt(bookId) ? result : book
+          )
+        );
+
+        // Update bookLoaded if it's the same book
+        if (bookLoaded && bookLoaded.id === parseInt(bookId)) {
+          setBookLoaded(result);
+        }
+
+        return result;
+      } catch (err) {
+        const errorMessage = handleApiError(err, "Failed to update book");
+        setUpdateBookError(errorMessage);
+        throw err;
+      } finally {
+        setUpdateBookLoading(false);
       }
-
-      const result = await response.json();
-
-      // Update the book in local state
-      setBooks((prevBooks) =>
-        prevBooks.map((book) => (book.id === parseInt(bookId) ? result : book))
-      );
-
-      // Update bookLoaded if it's the same book
-      if (bookLoaded && bookLoaded.id === parseInt(bookId)) {
-        setBookLoaded(result);
-      }
-
-      return result;
-    } catch (err) {
-      const errorMessage = handleApiError(err, "Failed to update book");
-      setUpdateBookError(errorMessage);
-      throw err;
-    } finally {
-      setUpdateBookLoading(false);
-    }
-  }, [bookLoaded]);
+    },
+    [bookLoaded]
+  );
 
   // Clear error functions
   const clearAddBookError = useCallback(() => setAddBookError(""), []);
@@ -213,6 +222,8 @@ export const useBooksStore = () => {
     addBook,
     deleteBook,
     updateBook,
+
+    booksCount: books.length,
 
     // Error clearing functions
     clearAddBookError,
