@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { supabase } from "../supabaseClient";
 
 export const useBooksStore = () => {
   // State
@@ -214,7 +215,7 @@ export const useBooksStore = () => {
     updateBookError,
 
     // Getters
-    booksCount,
+    booksCount: books.length,
 
     // Actions
     fetchBooks,
@@ -222,8 +223,6 @@ export const useBooksStore = () => {
     addBook,
     deleteBook,
     updateBook,
-
-    booksCount: books.length,
 
     // Error clearing functions
     clearAddBookError,
