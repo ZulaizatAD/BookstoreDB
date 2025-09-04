@@ -1,0 +1,21 @@
+# docker-compose.yml (Modified for Supabase)
+version: '3.8'
+
+services:
+  app:
+    build: . # Build the image from the Dockerfile in the current directory
+    ports:
+      - "8000:8000" # Map host port 8000 to container port 8000
+    environment:
+      # IMPORTANT: Replace these with your actual Supabase connection details.
+      # It's highly recommended to use a .env file for sensitive credentials.
+      DATABASE_URL: postgresql://[YOUR_SUPABASE_USER]:[YOUR_SUPABASE_PASSWORD]@[YOUR_SUPABASE_HOST]:5432/[YOUR_SUPABASE_DB_NAME]
+      # Example: postgresql://postgres:your_password@aws-0-us-east-1.pooler.supabase.com:5432/postgres
+      # You can find this in your Supabase project settings -> Database -> Connection String
+      # Make sure to use the "Connection string" for your application, not the direct connection.
+      # Often, Supabase provides a "Connection string" that includes the pooler.
+    # Optional: Load environment variables from a .env file
+    env_file:
+      - .env
+    # No 'depends_on' needed for 'db' as it's external
+    # No local volumes for database data needed
