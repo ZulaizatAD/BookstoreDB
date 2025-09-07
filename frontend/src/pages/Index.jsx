@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import BooksList from "../components/BooksList";
+import FilterSort from "../components/FilterSort";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Toast from "../components/Toast";
 import { PlusIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useBooksStore } from "../stores/BookStores";
+import { useFilterSort } from "../hooks/useFilterSort";
 
 const Index = () => {
   const { books, loading, error, booksCount, fetchBooks, deleteBook } =
     useBooksStore();
+
+  const {
+    filteredBooks,
+    filters,
+    sortConfig,
+    handleFilterChange,
+    handleSortChange,
+    resetFiltersAndSort,
+    totalBooks,
+    filteredCount,
+  } = useFilterSort(books);
 
   const [toast, setToast] = useState(null);
 
@@ -38,9 +51,18 @@ const Index = () => {
     handleLoadBooks();
   }, []);
 
-  // Calculate stats
-  const inStockBooks = books.filter((book) => book.qty > 0).length;
-  const outOfStockBooks = books.filter((book) => book.qty === 0).length;
+  // Calculate stats from filtered books
+  const inStockBooks = filteredBooks.filter((book) => book.qty > 10).length;
+  const lowStockBooks = filteredBooks.filter(
+    (book) => book.qty > 0 && book.qty < 10
+  ).length;
+  const outOfStockBooks = filteredBooks.filter((book) => book.qty === 0).length;
+
+  const hasActiveFilters =
+    filters.search ||
+    filters.stockStatus !== "all" ||
+    filters.priceRange !== "all" ||
+    filters.author;
 
   return (
     <div className="space-y-8">
@@ -50,10 +72,11 @@ const Index = () => {
           Welcome to BookStore Manager
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Manage your book inventory with ease. Add, edit, and track your books
-          in one place.
+          Manage your book inventory with ease. Add, edit, filter, and track
+          your books in one place.
         </p>
       </div>
+
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up">
         <Link to="/add-book" className="btn-primary">
@@ -71,19 +94,36 @@ const Index = () => {
           />
           {loading ? "Loading..." : "Refresh Books"}
         </button>
+
+        {/* Reset Filters Button */}
+        {hasActiveFilters && (
+          <button
+            onClick={resetFiltersAndSort}
+            className="btn-secondary text-sm"
+          >
+            Reset All Filters
+          </button>
+        )}
       </div>
 
       {/* Stats Cards */}
       <div
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in"
+        className="grid grid-cols-1 md:grid-cols-4 gap-6 animate-fade-in"
         style={{ animationDelay: "0.2s" }}
       >
         <div className="card text-center group hover:scale-105 transition-transform duration-200">
           <div className="p-6">
             <div className="text-3xl font-bold text-cadetblue mb-2 group-hover:text-cadetblue-dark transition-colors">
-              {booksCount}
+              {filteredCount}
             </div>
-            <div className="text-gray-600">Total Books</div>
+            <div className="text-gray-600">
+              {filteredCount === totalBooks ? "Total Books" : "Filtered Books"}
+            </div>
+            {filteredCount !== totalBooks && (
+              <div className="text-xs text-gray-500 mt-1">
+                of {totalBooks} total
+              </div>
+            )}
           </div>
         </div>
 
@@ -92,7 +132,16 @@ const Index = () => {
             <div className="text-3xl font-bold text-green-600 mb-2 group-hover:text-green-700 transition-colors">
               {inStockBooks}
             </div>
-            <div className="text-gray-600">In Stock</div>
+            <div className="text-gray-600">In Stock (10+)</div>
+          </div>
+        </div>
+
+        <div className="card text-center group hover:scale-105 transition-transform duration-200">
+          <div className="p-6">
+            <div className="text-3xl font-bold text-yellow-600 mb-2 group-hover:text-yellow-700 transition-colors">
+              {lowStockBooks}
+            </div>
+            <div className="text-gray-600">Low Stock (1-9)</div>
           </div>
         </div>
 
@@ -129,7 +178,17 @@ const Index = () => {
         </div>
       )}
 
-      {/* Books List */}
+      {/* Filter and Sort Controls */}
+      {!loading && books.length > 0 && (
+        <FilterSort
+          onFilterChange={handleFilterChange}
+          onSortChange={handleSortChange}
+          totalBooks={totalBooks}
+          filteredBooks={filteredCount}
+        />
+      )}
+
+      {/* Books List Section */}
       <div
         className="space-y-6 animate-fade-in"
         style={{ animationDelay: "0.4s" }}
@@ -138,20 +197,88 @@ const Index = () => {
           <h2 className="text-2xl font-semibold text-slate-gray">
             Book Inventory
           </h2>
-          <div className="text-sm text-gray-500">
-            {booksCount} {booksCount === 1 ? "book" : "books"} total
+          <div className="text-sm text-gray-500 flex items-center space-x-4">
+            <span>
+              Showing {filteredCount} of {totalBooks} books
+            </span>
+            {sortConfig.field !== "title" && (
+              <span className="text-cadetblue font-medium">
+                Sorted by {sortConfig.field}{" "}
+                {sortConfig.direction === "asc" ? "↑" : "↓"}
+              </span>
+            )}
           </div>
         </div>
 
+        {/* Active Filters Display */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm text-gray-600 font-medium">
+              Active filters:
+            </span>
+            {filters.search && (
+              <span className="filter-badge">Search: "{filters.search}"</span>
+            )}
+            {filters.stockStatus !== "all" && (
+              <span className="filter-badge">
+                Stock:{" "}
+                {filters.stockStatus.replace(/([A-Z])/g, " $1").toLowerCase()}
+              </span>
+            )}
+            {filters.priceRange !== "all" && (
+              <span className="filter-badge">
+                Price:{" "}
+                {filters.priceRange === "under10"
+                  ? "Under $10"
+                  : filters.priceRange === "10to50"
+                  ? "$10-$50"
+                  : "Over $50"}
+              </span>
+            )}
+            {filters.author && (
+              <span className="filter-badge">Author: "{filters.author}"</span>
+            )}
+          </div>
+        )}
+
+        {/* Books Display */}
         {loading && books.length === 0 ? (
           <div className="flex justify-center py-12">
             <LoadingSpinner size="lg" text="Loading books..." />
           </div>
+        ) : filteredBooks.length === 0 && books.length > 0 ? (
+          <div className="w-full">
+            <div className="alert alert-warning max-w-2xl mx-auto">
+              <div className="flex items-center">
+                <svg
+                  className="w-6 h-6 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <div>
+                  <h3 className="font-semibold mb-1">
+                    No books match your filters
+                  </h3>
+                  <p className="text-sm opacity-90">
+                    Try adjusting your search terms or filters to see more
+                    results.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         ) : (
           <BooksList
-            books={books}
+            books={filteredBooks}
             loading={loading}
             onDeleteBook={handleDeleteBook}
+            showStats={hasActiveFilters}
           />
         )}
       </div>

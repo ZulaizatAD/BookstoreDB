@@ -4,22 +4,28 @@ import {
   PencilIcon,
   TrashIcon,
   BookOpenIcon,
-  UserIcon
+  UserIcon,
+  CurrencyDollarIcon,
+  CubeIcon
 } from "@heroicons/react/24/outline";
 
-const BooksList = ({ books = [], loading = false, onDeleteBook }) => {
+const BooksList = ({ books = [], loading = false, onDeleteBook, showStats = false }) => {
   const navigate = useNavigate();
 
   const editBook = (bookId) => {
     navigate(`/edit-book/${bookId}`);
   };
 
-  // Loading skeleton
+  // Loading skeleton with enhanced animations
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {[...Array(8)].map((_, index) => (
-          <div key={index} className="card animate-pulse">
+          <div 
+            key={index} 
+            className="card filter-loading"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
             <div className="p-6">
               <div className="h-6 bg-light-steel-blue rounded mb-2"></div>
               <div className="h-4 bg-light-steel-blue rounded mb-4 w-3/4"></div>
@@ -38,20 +44,27 @@ const BooksList = ({ books = [], loading = false, onDeleteBook }) => {
     );
   }
 
-  // Show info message when no books and not loading
+  // Enhanced no results state
   if (books.length === 0 && !loading) {
     return (
       <div className="w-full">
-        <div className="alert alert-info max-w-2xl mx-auto">
-          <div className="flex items-center">
-            <BookOpenIcon className="w-6 h-6 mr-3 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold mb-1">No books found</h3>
-              <p className="text-sm opacity-90">
-                Click "Load Books" to fetch data or "Add Books" to create new
-                ones.
-              </p>
-            </div>
+        <div className={`${showStats ? 'no-results' : 'alert alert-info'} max-w-2xl mx-auto animate-fade-in`}>
+          <div className="flex flex-col items-center text-center">
+            <BookOpenIcon className="w-12 h-12 text-cadetblue mb-4" />
+            <h3 className="text-lg font-semibold text-slate-gray mb-2">
+              {showStats ? 'No books match your filters' : 'No books found'}
+            </h3>
+            <p className="text-gray-600 mb-4">
+              {showStats 
+                ? "Try adjusting your search criteria or filters to see more results."
+                : "Click \"Load Books\" to fetch data or \"Add Books\" to create new ones."
+              }
+            </p>
+            {showStats && (
+              <div className="flex gap-2 text-xs text-gray-500">
+                <span>💡 Tip: Try broader search terms or reset filters</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -63,8 +76,8 @@ const BooksList = ({ books = [], loading = false, onDeleteBook }) => {
       {books.map((book, index) => (
         <div
           key={book.id}
-          className="card group animate-fade-in"
-          style={{ animationDelay: `${index * 0.1}s` }}
+          className="book-card-filtered filter-delay-1"
+          style={{ animationDelay: `${index * 0.05}s` }}
         >
           {/* Card Header */}
           <div className="p-6 flex-grow">
@@ -75,75 +88,85 @@ const BooksList = ({ books = [], loading = false, onDeleteBook }) => {
               </span>
             </div>
 
-            <h2 className="text-xl font-semibold text-slate-gray mb-2 line-clamp-2 group-hover:text-cadetblue transition-colors duration-200">
+            <h2 className="text-xl font-semibold text-slate-gray mb-2 line-clamp-2 group-hover:text-cadetblue filter-transition">
               {book.title}
             </h2>
 
             <p className="text-gray-600 text-sm mb-4 flex items-center">
-              <UserIcon className="h-4 w-4 mr-1" />
-              {book.author}
+              <UserIcon className="h-4 w-4 mr-1 flex-shrink-0" />
+              <span className="line-clamp-1 filter-text-truncate">{book.author}</span>
             </p>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-cadetblue">
-                  ${parseFloat(book.price).toFixed(2)}
-                </span>
+                <div className="flex items-center text-cadetblue">
+                  <CurrencyDollarIcon className="h-5 w-5 mr-1" />
+                  <span className="text-2xl font-bold">
+                    {parseFloat(book.price).toFixed(2)}
+                  </span>
+                </div>
                 <div className="text-right">
-                  <div className="text-sm text-gray-500">Quantity</div>
+                  <div className="flex items-center text-gray-500 text-sm mb-1">
+                    <CubeIcon className="h-4 w-4 mr-1" />
+                    <span>Qty</span>
+                  </div>
                   <div className="text-lg font-semibold text-slate-gray">
                     {book.qty}
                   </div>
                 </div>
               </div>
 
-              {/* Stock status indicator */}
-              <div className="flex items-center space-x-2">
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    book.qty > 10
-                      ? "bg-green-400"
+              {/* Enhanced stock status indicator with animations */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div
+                    className={`w-3 h-3 rounded-full filter-transition ${
+                      book.qty > 10
+                        ? "bg-green-400 shadow-lg shadow-green-400/50"
+                        : book.qty > 0
+                        ? "bg-yellow-400 shadow-lg shadow-yellow-400/50"
+                        : "bg-red-400 shadow-lg shadow-red-400/50"
+                    }`}
+                  ></div>
+                  <span
+                    className={`text-xs font-medium px-2 py-1 rounded-full filter-transition ${
+                      book.qty > 10
+                        ? "text-green-700 bg-green-100"
+                        : book.qty > 0
+                        ? "text-yellow-700 bg-yellow-100"
+                        : "text-red-700 bg-red-100"
+                    }`}
+                  >
+                    {book.qty > 10
+                      ? "In Stock"
                       : book.qty > 0
-                      ? "bg-yellow-400"
-                      : "bg-red-400"
-                  }`}
-                ></div>
-                <span
-                  className={`text-xs font-medium ${
-                    book.qty > 10
-                      ? "text-green-600"
-                      : book.qty > 0
-                      ? "text-yellow-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {book.qty > 10
-                    ? "In Stock"
-                    : book.qty > 0
-                    ? "Low Stock"
-                    : "Out of Stock"}
-                </span>
+                      ? "Low Stock"
+                      : "Out of Stock"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Card Actions */}
+          {/* Enhanced Card Actions */}
           <div className="px-6 py-4 bg-gradient-to-r from-aliceblue to-blue-50 rounded-b-xl border-t border-light-steel-blue/30">
             <div className="flex gap-2">
               <button
-                className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-sm font-medium text-cadetblue hover:bg-cadetblue hover:text-white rounded-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-cadetblue focus:ring-offset-2"
+                className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-sm font-medium text-cadetblue hover:bg-cadetblue hover:text-white rounded-lg filter-transition transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-cadetblue focus:ring-offset-2"
                 onClick={() => editBook(book.id)}
+                title={`Edit ${book.title}`}
               >
                 <PencilIcon className="h-4 w-4" />
                 <span>Edit</span>
               </button>
 
               <button
-                className={`flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-500 hover:text-white rounded-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
+                className={`flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-500 hover:text-white rounded-lg filter-transition transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
                   loading ? "opacity-50 cursor-not-allowed transform-none" : ""
                 }`}
                 disabled={loading}
                 onClick={() => onDeleteBook(book.id)}
+                title={`Delete ${book.title}`}
               >
                 {loading ? (
                   <>

@@ -55,7 +55,7 @@ const Layout = ({ children }) => {
       <footer className="bg-slate-gray text-white py-8 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sm opacity-80">
-            © 2025 BookStore Manager. Built with React & Tailwind CSS.
+            © 2025 BookStore Database Manager. All rights reserved.
           </p>
         </div>
       </footer>
