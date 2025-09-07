@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 import logging
 from db.db_connection import init_table
 from routers.book_router import router as book_router
+from middleware import setup_all_middleware
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,20 +36,8 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://your-firebase-app.web.app",  # Your Firebase URL
-        "https://your-firebase-app.firebaseapp.com",
-        "http://localhost:3000",
-        "http://localhost:5173",
-    ],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"],
-)
-
+# Setup all middleware
+setup_all_middleware(app)
 
 @app.get("/")
 def read_root():

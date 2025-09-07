@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { supabase } from "../supabaseClient";
+import { buildApiUrl } from "../config/api";
 
 export const useBooksStore = () => {
   // State
@@ -11,9 +12,6 @@ export const useBooksStore = () => {
   const [bookLoaded, setBookLoaded] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // Getters
-  const booksCount = books.length;
 
   // Helper function to handle API errors
   const handleApiError = (error, defaultMessage) => {
@@ -30,7 +28,7 @@ export const useBooksStore = () => {
       setAddBookLoading(true);
       setAddBookError("");
 
-      const response = await fetch("http://127.0.0.1:8000/books", {
+      const response = await fetch(buildApiUrl("api/books"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,10 +49,7 @@ export const useBooksStore = () => {
       }
 
       const result = await response.json();
-
-      // Update local state
       setBooks((prevBooks) => [...prevBooks, result]);
-
       return result;
     } catch (err) {
       const errorMessage = handleApiError(err, "Failed to add book");
@@ -65,15 +60,22 @@ export const useBooksStore = () => {
     }
   }, []);
 
+  // Fetch books from backend
   const fetchBooks = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
 
-      const { data, error } = await supabase.from("books").select("*");
-z
-      if (error) throw error;
+      const response = await fetch(buildApiUrl("api/books"));
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `HTTP ${response.status}: Failed to fetch books`
+        );
+      }
+
+      const data = await response.json();
       setBooks(data);
     } catch (err) {
       setError(err.message || "Failed to fetch books");
@@ -83,20 +85,18 @@ z
     }
   }, []);
 
+  // Delete book by ID
   const deleteBook = useCallback(async (bookId) => {
     try {
       setLoading(true);
       setError("");
 
-      const response = await fetch(
-        `http://127.0.0.1:8000/books/${bookId}/delete`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(buildApiUrl(`api/books/${bookId}`), {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -115,13 +115,14 @@ z
     }
   }, []);
 
+  // Fetch book by ID
   const fetchBookById = useCallback(async (bookId) => {
     try {
       setLoading(true);
       setError("");
       setBookLoaded(null);
 
-      const response = await fetch(`http://127.0.0.1:8000/books/${bookId}`);
+      const response = await fetch(buildApiUrl(`api/books/${bookId}`));
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -142,27 +143,25 @@ z
     }
   }, []);
 
+  // Update book by ID
   const updateBook = useCallback(
     async (bookId, bookData) => {
       try {
         setUpdateBookLoading(true);
         setUpdateBookError("");
 
-        const response = await fetch(
-          `http://127.0.0.1:8000/books/${bookId}/edit`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              title: bookData.title,
-              author: bookData.author,
-              price: Number(bookData.price),
-              qty: Number(bookData.qty),
-            }),
-          }
-        );
+        const response = await fetch(buildApiUrl(`api/books/${bookId}`), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: bookData.title,
+            author: bookData.author,
+            price: Number(bookData.price),
+            qty: Number(bookData.qty),
+          }),
+        });
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
