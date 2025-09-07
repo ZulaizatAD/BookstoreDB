@@ -13,7 +13,7 @@ export const useBooksStore = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Helper function to handle API errors
+  // Helper function to handle API errors (keep as is)
   const handleApiError = (error, defaultMessage) => {
     console.error("API Error:", error);
     if (error.message.includes("Failed to fetch")) {
@@ -49,8 +49,10 @@ export const useBooksStore = () => {
       }
 
       const result = await response.json();
-      setBooks((prevBooks) => [...prevBooks, result]);
-      return result;
+      // Handle the response structure from your backend
+      const newBook = result.data || result;
+      setBooks((prevBooks) => [...prevBooks, newBook]);
+      return newBook;
     } catch (err) {
       const errorMessage = handleApiError(err, "Failed to add book");
       setAddBookError(errorMessage);
@@ -91,7 +93,7 @@ export const useBooksStore = () => {
       setLoading(true);
       setError("");
 
-      const response = await fetch(buildApiUrl(`api/books/${bookId}`), {
+      const response = await fetch(buildApiUrl(`api/books/${bookId}/delete`), {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -150,7 +152,7 @@ export const useBooksStore = () => {
         setUpdateBookLoading(true);
         setUpdateBookError("");
 
-        const response = await fetch(buildApiUrl(`api/books/${bookId}`), {
+        const response = await fetch(buildApiUrl(`api/books/${bookId}/edit`), {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -172,20 +174,20 @@ export const useBooksStore = () => {
         }
 
         const result = await response.json();
+        // Handle the response structure from your backend
+        const updatedBook = result.data || result;
 
-        // Update the book in local state
         setBooks((prevBooks) =>
           prevBooks.map((book) =>
-            book.id === parseInt(bookId) ? result : book
+            book.id === parseInt(bookId) ? updatedBook : book
           )
         );
 
-        // Update bookLoaded if it's the same book
         if (bookLoaded && bookLoaded.id === parseInt(bookId)) {
-          setBookLoaded(result);
+          setBookLoaded(updatedBook);
         }
 
-        return result;
+        return updatedBook;
       } catch (err) {
         const errorMessage = handleApiError(err, "Failed to update book");
         setUpdateBookError(errorMessage);
