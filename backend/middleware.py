@@ -7,8 +7,8 @@ def setup_cors_middleware(app: FastAPI):
     """
     # Define allowed origins
     allowed_origins = [
-        "bookstore-db-f17ed.web.app",
-        "bookstore-db-f17ed.firebaseapp.com",
+        "https://bookstore-db-f17ed.web.app",
+        "https://bookstore-db-f17ed.firebaseapp.com",
         "http://localhost:3000",  # React development server
         "http://localhost:5173",  # Vite development server
         "http://localhost:8080",  # Local testing
