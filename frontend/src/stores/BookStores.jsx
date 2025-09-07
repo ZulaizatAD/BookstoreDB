@@ -71,7 +71,7 @@ export const useBooksStore = () => {
       setError("");
 
       const { data, error } = await supabase.from("books").select("*");
-
+z
       if (error) throw error;
 
       setBooks(data);

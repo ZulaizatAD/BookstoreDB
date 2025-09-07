@@ -16,6 +16,9 @@ config/keys.js
 node_modules/
 venv/
 
+# Docker
+Dockerfile
+.dockerignore
 
 # Environment variables
 .env
@@ -39,3 +42,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
