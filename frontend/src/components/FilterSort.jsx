@@ -203,11 +203,11 @@ const FilterSort = memo(
 
             <div className="flex flex-wrap gap-2">
               {[
-                { field: "title", label: "Title", icon: "📚" },
-                { field: "author", label: "Author", icon: "👤" },
-                { field: "price", label: "Price", icon: "💰" },
-                { field: "qty", label: "Quantity", icon: "📦" },
-                { field: "id", label: "Date Added", icon: "📅" },
+                { field: "title", label: "Title", icon: "" },
+                { field: "author", label: "Author", icon: "" },
+                { field: "price", label: "Price", icon: "" },
+                { field: "qty", label: "Quantity", icon: "" },
+                { field: "id", label: "Date Added", icon: "" },
               ].map(({ field, label, icon }) => (
                 <button
                   key={field}
