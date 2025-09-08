@@ -111,7 +111,7 @@
     @apply opacity-50 cursor-not-allowed transform-none;
   }
 
-    .price-display {
+  .price-display {
     @apply flex items-baseline;
   }
 
@@ -375,9 +375,9 @@
     @apply truncate;
   }
 
-    /* Currency display utilities */
+  /* Currency display utilities */
   .currency-rm::before {
-    content: 'RM ';
+    content: "RM ";
     font-weight: 500;
     color: #5f9ea0;
   }
@@ -386,7 +386,7 @@
     @apply text-cadetblue font-bold;
   }
 
-    .btn-flex-center {
+  .btn-flex-center {
     @apply flex items-center justify-center;
   }
 
@@ -745,7 +745,7 @@
   animation: filter-slide-in 0.3s ease-out;
 }
 
-/* Search input enhancements */
+/* Search input */
 .filter-input:focus {
   background: rgba(240, 248, 255, 0.9);
   border-color: #5f9ea0;
@@ -753,17 +753,27 @@
     0 1px 3px rgba(95, 158, 160, 0.1);
 }
 
-/* Select dropdown enhancements */
+/* Select dropdown */
 .filter-select {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%235F9EA0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
+  @apply filter-input cursor-pointer appearance-none;
+  padding-right: 2.75rem;
 }
 
 .filter-select:focus {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234B7B7D' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.filter-select::-ms-expand {
+  display: none;
+}
+
+.filter-select option {
+  @apply bg-white text-slate-gray;
+}
+
+.filter-select-no-arrow {
+  @apply filter-input cursor-pointer appearance-none;
+  padding-right: 2.75rem;
 }
 
 /* Filter count badge animations */
