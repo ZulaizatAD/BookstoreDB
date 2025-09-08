@@ -229,10 +229,10 @@ const Index = () => {
               <span className="filter-badge">
                 Price:{" "}
                 {filters.priceRange === "under10"
-                  ? "Under $10"
+                  ? "Under RM10"
                   : filters.priceRange === "10to50"
-                  ? "$10-$50"
-                  : "Over $50"}
+                  ? "RM10-RM50"
+                  : "Over RM50"}
               </span>
             )}
             {filters.author && (

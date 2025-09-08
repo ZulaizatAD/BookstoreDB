@@ -195,7 +195,7 @@ const BookForm = ({ value, onChange, valid, onValidChange, onSubmit }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <InputField
                 name="price"
-                label="Price ($)"
+                label="Price (RM)"
                 type="number"
                 step="0.01"
                 min="0"

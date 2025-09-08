@@ -87,6 +87,42 @@
     @apply bg-gradient-to-r from-cadetblue to-steel-blue text-white px-6 py-4 rounded-t-xl;
   }
 
+  .card-actions {
+    @apply px-6 py-4 bg-gradient-to-r from-aliceblue to-blue-50 rounded-b-xl border-t border-light-steel-blue/30 mt-auto;
+  }
+
+  .card-actions-buttons {
+    @apply flex gap-2 w-full;
+  }
+
+  .card-action-button {
+    @apply flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 min-h-[2.5rem];
+  }
+
+  .card-action-button-edit {
+    @apply card-action-button text-cadetblue hover:bg-cadetblue hover:text-white focus:ring-cadetblue;
+  }
+
+  .card-action-button-delete {
+    @apply card-action-button text-red-600 hover:bg-red-500 hover:text-white focus:ring-red-500;
+  }
+
+  .card-action-button:disabled {
+    @apply opacity-50 cursor-not-allowed transform-none;
+  }
+
+    .price-display {
+    @apply flex items-baseline;
+  }
+
+  .price-currency {
+    @apply text-sm font-medium text-cadetblue mr-1;
+  }
+
+  .price-amount {
+    @apply text-2xl font-bold text-cadetblue;
+  }
+
   /* Form styles */
   .form-input {
     @apply block w-full px-4 py-3 border border-light-steel-blue rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cadetblue focus:border-cadetblue bg-aliceblue text-slate-gray placeholder-gray-400 transition-all duration-200;
@@ -135,9 +171,13 @@
     @apply bg-red-500;
   }
 
+  .filter-badge-price {
+    @apply filter-badge bg-green-600 hover:bg-green-700;
+  }
+
   /* Sort button styles */
   .sort-button {
-    @apply px-3 py-2 text-sm rounded-lg border transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply px-3 py-2 text-sm rounded-lg border transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center;
   }
 
   .sort-button-active {
@@ -146,6 +186,11 @@
 
   .sort-button-inactive {
     @apply sort-button bg-white text-cadetblue border-cadetblue hover:bg-cadetblue hover:text-white focus:ring-cadetblue;
+  }
+
+  /* Ensure proper spacing for button content */
+  .sort-button > * {
+    @apply flex-shrink-0;
   }
 
   /* Filter input enhancements */
@@ -300,17 +345,121 @@
     gap: 1rem;
   }
 
+  /* Card height consistency fixes */
+  .card-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6;
+  }
+
+  .card-grid > * {
+    @apply h-full;
+  }
+
+  /* Ensure all cards have same minimum height */
+  .book-card {
+    min-height: 320px;
+  }
+
+  /* Fix for flexbox alignment issues */
+  .book-card-content {
+    min-height: 0; /* Allow flex items to shrink */
+  }
+
+  /* Consistent button sizing */
+  .card-action-button {
+    height: 2.5rem; /* 40px */
+    min-width: 0; /* Allow buttons to shrink */
+  }
+
+  /* Prevent text overflow in buttons */
+  .card-action-button span {
+    @apply truncate;
+  }
+
+    /* Currency display utilities */
+  .currency-rm::before {
+    content: 'RM ';
+    font-weight: 500;
+    color: #5f9ea0;
+  }
+
+  .price-highlight {
+    @apply text-cadetblue font-bold;
+  }
+
+    .btn-flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .btn-icon-spacing > *:not(:last-child) {
+    @apply mr-2;
+  }
+
+  /* Advanced filter button specific */
+  .advanced-filter-btn {
+    @apply relative flex items-center justify-center px-3 py-2 text-sm rounded-lg border transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .advanced-filter-btn-active {
+    @apply advanced-filter-btn bg-cadetblue text-white border-cadetblue shadow-cadet focus:ring-cadetblue;
+  }
+
+  .advanced-filter-btn-inactive {
+    @apply advanced-filter-btn bg-white text-cadetblue border-cadetblue hover:bg-cadetblue hover:text-white focus:ring-cadetblue;
+  }
+
+  /* Fix for Safari flexbox issues */
+  @supports (-webkit-appearance: none) {
+    .book-card {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+    }
+
+    .book-card-content {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1 1 0%;
+      flex: 1 1 0%;
+    }
+  }
+
   @media (max-width: 640px) {
     .filter-grid {
       grid-template-columns: 1fr;
     }
   }
 
+  @media (max-width: 480px) {
+    .book-card {
+      min-height: 280px;
+    }
+
+    .card-action-button {
+      height: 2.25rem; /* 36px */
+      font-size: 0.75rem; /* 12px */
+    }
+
+    .card-action-button span {
+      @apply hidden sm:inline;
+    }
+  }
+
   /* Filter animation delays for staggered effects */
-  .filter-delay-1 { animation-delay: 0.1s; }
-  .filter-delay-2 { animation-delay: 0.2s; }
-  .filter-delay-3 { animation-delay: 0.3s; }
-  .filter-delay-4 { animation-delay: 0.4s; }
+  .filter-delay-1 {
+    animation-delay: 0.1s;
+  }
+  .filter-delay-2 {
+    animation-delay: 0.2s;
+  }
+  .filter-delay-3 {
+    animation-delay: 0.3s;
+  }
+  .filter-delay-4 {
+    animation-delay: 0.4s;
+  }
 }
 
 /* Loading animations */
@@ -486,7 +635,7 @@
 }
 
 .filter-loading::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -510,14 +659,65 @@
   }
 }
 
-/* Enhanced card animations */
+/* Card animations */
+.book-card {
+  @apply card flex flex-col h-full;
+}
+
+.book-card-content {
+  @apply p-6 flex-grow flex flex-col;
+}
+
+.book-card-header {
+  @apply flex items-start justify-between mb-3;
+}
+
+.book-card-title {
+  @apply text-xl font-semibold text-slate-gray mb-2 line-clamp-2 group-hover:text-cadetblue transition-colors duration-200 flex-grow;
+}
+
+.book-card-author {
+  @apply text-gray-600 text-sm mb-4 flex items-center;
+}
+
+.book-card-details {
+  @apply space-y-3 mt-auto;
+}
+
+.book-card-price-qty {
+  @apply flex items-center justify-between;
+}
+
+.book-card-price {
+  @apply flex items-center text-cadetblue;
+}
+
+.book-card-qty {
+  @apply text-right;
+}
+
+.book-card-status {
+  @apply flex items-center justify-between;
+}
+
+.book-card-status-indicator {
+  @apply flex items-center space-x-2;
+}
+
+.book-card-status-dot {
+  @apply w-3 h-3 rounded-full filter-transition;
+}
+
+.book-card-status-label {
+  @apply text-xs font-medium px-2 py-1 rounded-full filter-transition;
+}
+
 .book-card-filtered {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .book-card-filtered:hover {
-  box-shadow: 
-    0 20px 25px -5px rgba(95, 158, 160, 0.1),
+  box-shadow: 0 20px 25px -5px rgba(95, 158, 160, 0.1),
     0 10px 10px -5px rgba(95, 158, 160, 0.04),
     0 0 0 1px rgba(95, 158, 160, 0.05);
 }
@@ -549,8 +749,7 @@
 .filter-input:focus {
   background: rgba(240, 248, 255, 0.9);
   border-color: #5f9ea0;
-  box-shadow: 
-    0 0 0 3px rgba(95, 158, 160, 0.1),
+  box-shadow: 0 0 0 3px rgba(95, 158, 160, 0.1),
     0 1px 3px rgba(95, 158, 160, 0.1);
 }
 
@@ -592,7 +791,7 @@
 }
 
 .no-results::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -2px;
   left: -2px;
@@ -605,14 +804,30 @@
 }
 
 /* Staggered animation for book cards */
-.book-card-filtered:nth-child(1) { animation-delay: 0.05s; }
-.book-card-filtered:nth-child(2) { animation-delay: 0.1s; }
-.book-card-filtered:nth-child(3) { animation-delay: 0.15s; }
-.book-card-filtered:nth-child(4) { animation-delay: 0.2s; }
-.book-card-filtered:nth-child(5) { animation-delay: 0.25s; }
-.book-card-filtered:nth-child(6) { animation-delay: 0.3s; }
-.book-card-filtered:nth-child(7) { animation-delay: 0.35s; }
-.book-card-filtered:nth-child(8) { animation-delay: 0.4s; }
+.book-card-filtered:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.book-card-filtered:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.book-card-filtered:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.book-card-filtered:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.book-card-filtered:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.book-card-filtered:nth-child(6) {
+  animation-delay: 0.3s;
+}
+.book-card-filtered:nth-child(7) {
+  animation-delay: 0.35s;
+}
+.book-card-filtered:nth-child(8) {
+  animation-delay: 0.4s;
+}
 
 /* Enhanced tooltip styles for filter elements */
 .filter-tooltip {
@@ -638,7 +853,7 @@
 }
 
 .filter-tooltip::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 100%;
   left: 50%;
@@ -687,7 +902,7 @@
 }
 
 .status-indicator::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -710,7 +925,8 @@
 }
 
 @keyframes status-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0;
     transform: scale(1);
   }
